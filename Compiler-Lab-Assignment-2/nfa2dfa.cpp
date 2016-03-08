@@ -1,7 +1,5 @@
 #include <cstdio>
 #include <vector>
-#include "define.h"
-#include "re2nfa.cpp"
 using namespace std;
 
 void epsilon_closure(nfa a, int state, vector<bool>& closure)
@@ -50,7 +48,6 @@ vector<nfa_dfa_state> nfa_to_dfa(nfa input)
     // while (it != final.end())
     for (size_t it = 0; it < final.size(); it++)
     {
-        printf("%zu\n", it);
         // iterate for all input characters
         for (size_t j = 0; j < 26; j++) {
             vector<bool> closure(states,0);
@@ -73,8 +70,8 @@ vector<nfa_dfa_state> nfa_to_dfa(nfa input)
             if( (final[it]).trans[j] < 0 && closure != zeroes) {
                 nfa_dfa_state a;
                 a.state = closure;
-                if (init_closure[states - 1] == 1)
-                    initial.isFinal = 1;
+                if (closure[states - 1] == 1)
+                    a.isFinal = 1;
                 final[it].trans[j] = final.size();
                 final.push_back(a);
                 for (size_t i = 0; i < states; i++) {
@@ -85,28 +82,4 @@ vector<nfa_dfa_state> nfa_to_dfa(nfa input)
         }
     }
     return final;
-}
-
-int main()
-{
-    char input[1000];
-    scanf("%s",input);
-    nfa c =re_to_nfa(input);
-    // nfa a = create(1);
-    // nfa b = create(2);
-    // nfa c = kleene(a);
-    for (size_t i = 0; i < c.trans.size(); i++) {
-        for (size_t j = 0; j < 27; j++) {
-            printf("%d ", c.trans[i][j].size() ? c.trans[i][j][0] : 0);
-        }
-        printf("\n");
-    }
-    vector<nfa_dfa_state> ans = nfa_to_dfa(c);
-    printf("States: %zu\n", ans.size());
-    for (size_t i = 0; i < ans.size(); i++) {
-        for (size_t j = 0; j < 26; j++) {
-            printf("%d ", ans[i].trans[j] >= 0 ? ans[i].trans[j] : 0);
-        }
-        printf("\n");
-    }
 }
