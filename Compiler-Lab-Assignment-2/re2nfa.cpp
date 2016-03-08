@@ -2,6 +2,8 @@
 #include <vector>
 #include <cstring>
 #include <stack>
+#include <iostream>
+#include <fstream>
 // #include "define.h"
 using namespace std;
 
@@ -239,6 +241,21 @@ nfa re_to_nfa(char* re)
     //nfa e;
     //return e;
     return operands.top();
+}
+
+void write_nfa(nfa input)
+{
+    ofstream outfile;
+    outfile.open("nfa.txt");
+    outfile << input.trans.size() << endl;
+    for (size_t i = 0; i < input.trans.size(); i++) {
+        for (size_t j = 0; j < 27; j++) {
+            for (size_t k = 0; k < input[i][j].size(); k++) {
+                outfile << i << "   " << j << "   " << input[i][j][k] << endl;
+            }
+        }
+    }
+    outfile.close();
 }
 
 // int main()
