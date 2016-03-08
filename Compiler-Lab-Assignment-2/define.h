@@ -20,5 +20,7 @@ struct nfa {
 struct nfa_dfa_state {
     vector<bool> state;
     vector<int> trans;
-    bool isFinal = 0;
-}
+    bool isFinal;
+
+    nfa_dfa_state() : trans(26,-1), isFinal(0) {}
+};
