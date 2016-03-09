@@ -32,7 +32,5 @@ int main()
     }
     vector<nfa_dfa_state> final = optimize_dfa(ans);
     write_dfa(final, "min_dfa.txt", input);
-    // read_dfa();
-    // scanf("%s", input);
-    // simulate_DFA(final, input);
+
 }

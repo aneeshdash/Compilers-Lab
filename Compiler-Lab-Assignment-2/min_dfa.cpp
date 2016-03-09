@@ -149,31 +149,3 @@ vector<nfa_dfa_state> optimize_dfa(vector<nfa_dfa_state> oldDFA)
     printf("No. of states: %zu\n", newDFA.size());
     return newDFA;
 }
-
-void simulate_DFA(vector<nfa_dfa_state>& newDFA,char* input)
-{
-	int start,number;
-	for (size_t i = 0; i < newDFA.size(); ++i)
-	{
-		if (newDFA[i].isStart)
-		{
-			start = i;
-		}
-	}
-	//printf("%d\n",start );
-	for(int i=0; i < strlen(input);i++)
-	{
-
-		number =int(input[i])-97;
-		start = newDFA[start].trans[number];
-	}
-
-	if(newDFA[start].isFinal)
-	{
-		printf("string accepted by DFA\n");
-	}
-	else
-	{
-		printf("string not accepted by DFA\n");
-	}
-}
