@@ -1,5 +1,5 @@
 #include <vector>
-
+#include <cstring>
 void add_dummy(vector<nfa_dfa_state>& oldDFA)
 {
     nfa_dfa_state dummy;
@@ -76,6 +76,39 @@ void split_dfa(vector<nfa_dfa_state>& newDFA, vector<nfa_dfa_state>& oldDFA, int
     newDFA.erase(newDFA.begin()+state);
 }
 
+void add_transitions(vector<nfa_dfa_state>& newDFA, vector<nfa_dfa_state>& oldDFA)
+{
+	for (size_t i = 0; i < newDFA.size(); ++i)
+	{
+		int k = -1;
+		for(size_t l=0 ; l < oldDFA.size() ; l++)
+		{
+			if(newDFA[i].state[l]){
+				k=l;
+				break;
+			}
+		}
+
+		for (int j = 0; j < 26; ++j)
+		{
+			newDFA[i].trans[j] = getSubset(newDFA,oldDFA[k].trans[j]);
+		}
+	}
+}
+
+void add_final(vector<nfa_dfa_state>& newDFA, vector<nfa_dfa_state>& oldDFA)
+{
+	for(size_t i =0 ;i< oldDFA.size() ;i++)
+	{
+		if(oldDFA[i].isFinal)
+		{
+			int k = getSubset(newDFA,i);
+			newDFA[k].isFinal = 1;
+			//printf("%d\n",k);
+		}
+	}
+}
+
 
 vector<nfa_dfa_state> optimize_dfa(vector<nfa_dfa_state> oldDFA)
 {
@@ -109,6 +142,38 @@ vector<nfa_dfa_state> optimize_dfa(vector<nfa_dfa_state> oldDFA)
                 break;
         }
     } while(s_state != newDFA.size());
+    add_transitions(newDFA,oldDFA);
+    add_final(newDFA,oldDFA);
+    int start = getSubset(newDFA ,0);
+    newDFA[start].isStart = 1 ;
     printf("No. of states: %zu\n", newDFA.size());
     return newDFA;
+}
+
+void simulate_DFA(vector<nfa_dfa_state>& newDFA,char* input)
+{
+	int start,number;
+	for (size_t i = 0; i < newDFA.size(); ++i)
+	{
+		if (newDFA[i].isStart)
+		{
+			start = i;
+		}
+	}
+	//printf("%d\n",start );
+	for(int i=0; i < strlen(input);i++)
+	{
+
+		number =int(input[i])-97;
+		start = newDFA[start].trans[number];
+	}
+
+	if(newDFA[start].isFinal)
+	{
+		printf("string accepted by DFA\n");
+	}
+	else
+	{
+		printf("string not accepted by DFA\n");
+	}
 }

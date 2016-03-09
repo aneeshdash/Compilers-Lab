@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <vector>
+#include <string>
 using namespace std;
 
 void epsilon_closure(nfa a, int state, vector<bool>& closure)
@@ -41,6 +42,7 @@ vector<nfa_dfa_state> nfa_to_dfa(nfa input)
     printf("\n");
     nfa_dfa_state initial;
     initial.state = init_closure;
+    initial.isStart = 1;
     if (init_closure[states - 1] == 1)
         initial.isFinal = 1;
     final.push_back(initial);
