@@ -146,6 +146,5 @@ vector<nfa_dfa_state> optimize_dfa(vector<nfa_dfa_state> oldDFA)
     add_final(newDFA,oldDFA);
     int start = getSubset(newDFA ,0);
     newDFA[start].isStart = 1 ;
-    printf("No. of states: %zu\n", newDFA.size());
     return newDFA;
 }
