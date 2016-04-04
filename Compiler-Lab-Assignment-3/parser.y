@@ -30,9 +30,9 @@
 %token <Node>   MINUS PLUS BY TIMES MOD NOT
 %token <Node>   GREQ LEQ LESS GREATER NEQ EQUALS AND OR ASSIGN
 %start   program
-%expect 5
+%expect 6
 
-%type <Node> program declaration_list declaration empty scoped_type_specifier scoped_variable_dec variable_dec variable_dec_list function_dec parameters parameter_list parameter_type_list statement print_stmt compound_stmt stmt_list expression_stmt conditional_stmt iteration_stmt return_stmt break_stmt expression expr_suffix read_expr simple_expr and_expr unary_rel_expr rel_expr sum_expr sumop term mulop unary_expr unaryop factor call args arg_list constant openparen closedparen closedbraces comma semicolon id
+%type <Node> program declaration_list declaration empty scoped_type_specifier scoped_variable_dec variable_dec variable_dec_list function_dec parameters parameter_list parameter_type_list statement print_stmt compound_stmt stmt_list expression_stmt conditional_stmt iteration_stmt return_stmt break_stmt expression expr_suffix read_expr simple_expr and_expr unary_rel_expr rel_expr sum_expr sumop term mulop factor call args arg_list constant openparen closedparen closedbraces comma semicolon id
 
 %%
 
@@ -85,6 +85,7 @@ declaration : scoped_variable_dec
 {
    $$ = add_node("declaration",$1);
 }
+            | error {printf("Error: Missing Type Specifier at line %d\n", lineno); flag = 1;$$ = NULL;}
             ;
 
 
@@ -210,7 +211,7 @@ compound_stmt           : OPENBRACES stmt_list closedbraces
 
 stmt_list               : stmt_list statement
 {
-    $$ = add_node("stmt_list",$1);
+    $$ = add_node("stmt_list",$1, $2);
 }
                         | empty
 {
@@ -235,7 +236,7 @@ conditional_stmt        : IF  openparen expression closedparen statement
 }
                         ;
 
-iteration_stmt          : WHILE openparen simple_expr closedparen statement
+iteration_stmt          : WHILE openparen expression closedparen statement
 {
     $$ = add_node("iteration_stmt",$1,$2,$3,$4,$5);
 }
@@ -276,6 +277,10 @@ expression              : read_expr
     $$ = add_node("expression",$1,$2,$3);
 }
                         | IDENTIFIER BY expr_suffix
+{
+    $$ = add_node("expression",$1,$2,$3);
+}
+                        | IDENTIFIER MOD expr_suffix
 {
     $$ = add_node("expression",$1,$2,$3);
 }
@@ -383,11 +388,11 @@ sumop                   : PLUS
 }
                         ;
 
-term                    : term mulop unary_expr
+term                    : term mulop factor
 {
     $$ = add_node("term",$1,$2,$3);
 }
-                        | unary_expr
+                        | factor
 {
     $$ = add_node("term",$1);
 }
@@ -407,25 +412,6 @@ mulop                   : TIMES
     $$ = add_node("mulop",$1);
 }
 ;
-
-unary_expr              : unaryop unary_expr
-{
-    $$ = add_node("unary_expr",$1,$2);
-}
-                        | factor
-{
-    $$ = add_node("unary_expr",$1);
-}
-                        ;
-
-unaryop                 : TIMES
-{
-    $$ = add_node("unaryop",$1);
-}
-| BY
-{
-    $$ = add_node("unaryop",$1);
-};
 
 factor                  : IDENTIFIER
 {
@@ -518,7 +504,7 @@ semicolon               : SEMICOLON
 {
     $$ = add_node("semicolon",$1);
 }
-                        | error {printf("Error: Missing ';' or ',' at line %d\n", lineno); flag = 1; $$ = NULL;};
+                        | error {printf("Error: Missing ';' or ',' at line %d\n", lineno - 1); flag = 1; $$ = NULL;};
 
 id                      : IDENTIFIER
 {
