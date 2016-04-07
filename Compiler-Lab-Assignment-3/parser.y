@@ -93,6 +93,8 @@ scoped_type_specifier   : SCOPE_SPECIFIER TYPE_SPECIFIER
 {
     $$ = add_node("scoped_type_specifier",$1,$2);
 }
+                        | SCOPE_SPECIFIER error {printf("Error: Missing Type Specifier at line %d\n", lineno); flag = 1;$$ = NULL;}
+
 ;
 
 scoped_variable_dec     : scoped_type_specifier variable_dec_list semicolon
@@ -152,6 +154,7 @@ parameter_type_list     : TYPE_SPECIFIER IDENTIFIER
 {
     $$ = add_node("parameter_type_list",$1,$2);
 }
+                        | IDENTIFIER {printf("Error: Missing Type Specifier at line %d\n", lineno); flag = 1; $$ = NULL;};
 
 ;
 
@@ -504,7 +507,7 @@ semicolon               : SEMICOLON
 {
     $$ = add_node("semicolon",$1);
 }
-                        | error {printf("Error: Missing ';' or ',' at line %d\n", lineno - 1); flag = 1; $$ = NULL;};
+                        | error {printf("Error: Missing ';' or ',' near line %d\n", lineno); flag = 1; $$ = NULL;};
 
 id                      : IDENTIFIER
 {
