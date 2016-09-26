@@ -1,6 +1,5 @@
-static int fact = 1;
-
-int factorial(int n)
+int fact;
+int factorial (int n)
 {
 	if (n == 1)
     	fact = fact * 1;
@@ -11,8 +10,10 @@ int factorial(int n)
 
 bool checkPerfectSquare (int a)
 {
-	bool res = false;
-    int i = 2;
+	bool res;
+    res = false;
+    int i;
+    i = 1;
     while (i < a)
     {
         while(i<2)
@@ -24,6 +25,7 @@ bool checkPerfectSquare (int a)
         	res = true;
         i = i + 1;
     }
+}
     return res;
 }
 
